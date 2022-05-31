@@ -6,20 +6,26 @@ function _init()
     leftBezierTopX = 50
     rightBezierTopX = 78
     horzY = 40
+    horzMovementInterval = 0.25
+    minXCurve = 0
+    curbWidth = 2
 end
 
 function _update()
     if (btn(0)) then
         leftBezierAnchorX -= 1
         rightBezierAnchorX -= 1
-        leftBezierTopX += 0.5
-        rightBezierTopX += 0.5
+        -- Useful idea below but would need to consider movement in the other direction
+        -- leftBezierAnchorX = max(leftBezierAnchorX - 1, minXCurve)
+        -- rightBezierAnchorX = max(rightBezierAnchorX - 1, minXCurve + 88)
+        leftBezierTopX += horzMovementInterval
+        rightBezierTopX += horzMovementInterval
     end
     if (btn(1)) then
         leftBezierAnchorX += 1
         rightBezierAnchorX += 1
-        leftBezierTopX -= 0.5
-        rightBezierTopX -= 0.5
+        leftBezierTopX -= horzMovementInterval
+        rightBezierTopX -= horzMovementInterval
     end
     if (btn(2)) then
         leftBezierAnchorY -= 1
@@ -44,12 +50,14 @@ function drawSky()
 end
 
 function drawLeftRoadEdge()
-    drawqbc(20,158,leftBezierTopX,horzY,leftBezierAnchorX,leftBezierAnchorY,200,0)
+    drawqbcExtended(20,158,leftBezierTopX,horzY,leftBezierAnchorX,leftBezierAnchorY,200,0)
+    drawqbc(20,158,leftBezierTopX,horzY,leftBezierAnchorX,leftBezierAnchorY,200,curbWidth,7)
     rect(leftBezierAnchorX,leftBezierAnchorY,leftBezierAnchorX,leftBezierAnchorY,8)
 end
 
 function drawRightRoadEdge()
-    drawqbc(108,158,rightBezierTopX,horzY,rightBezierAnchorX,rightBezierAnchorY,200,0)
+    drawqbcExtended(108,158,rightBezierTopX,horzY,rightBezierAnchorX,rightBezierAnchorY,200,3)
+    drawqbc(108,158,rightBezierTopX,horzY,rightBezierAnchorX,rightBezierAnchorY,200,curbWidth,7)
     rect(rightBezierAnchorX,rightBezierAnchorY,rightBezierAnchorX,rightBezierAnchorY,8)
 end
 
@@ -68,9 +76,25 @@ end
 --x3,y3 = 3rd manipulating point 
 --n = "amount of pixels in curve"(just put it higher than you expect)
 --c = color
-function drawqbc(x1,y1,x2,y2,x3,y3,n,c)
+function drawqbc(x1,y1,x2,y2,x3,y3,n,w,c)
     for i = 1,n do 
         local t = i/n
-       pset(qbcvector(x1,x2,x3,t),qbcvector(y1,y2,y3,t),c)
+        local x = qbcvector(x1,x2,x3,t)
+        local y = qbcvector(y1,y2,y3,t)
+        for j = 0,(w-1) do
+            pset(x+j,y,c)
+        end
+    end
+end
+
+function drawqbcExtended(x1,y1,x2,y2,x3,y3,n,c)
+    for i = 1,n do 
+        local t = i/n
+        local x = qbcvector(x1,x2,x3,t)
+        local y = qbcvector(y1,y2,y3,t)
+        -- count x to 128
+        for newX = x,128 do
+            pset(newX,y,c)
+        end
     end
 end
