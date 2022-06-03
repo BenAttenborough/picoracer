@@ -15,6 +15,7 @@ function _init()
     count = 1
     slowCount = 1
     movementCount = 1
+    toggle = false
     Dlog("Initialise log", true)
 end
 
@@ -26,8 +27,9 @@ function _update()
         slowCount += 1
         slowCount = slowCount % 5
     end
+    movementCount += 1
+    if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
-    
 end
 
 function _draw()
@@ -37,19 +39,12 @@ function _draw()
     drawRightRoadEdge()
     drawSky()
     -- print(slowCount,5,5,7)
-    print(movementCount,5,5,7)
+    -- print(movementCount,5,5,7)
+    -- print(toggle,5,12,7)
 end
 
 function input()
     if (btn(0)) then
-        leftBezierAnchorX -= 1
-        rightBezierAnchorX -= 1
-        centralBezierAnchorX -= 1
-        leftBezierTopX += horzMovementInterval
-        rightBezierTopX += horzMovementInterval
-        centralBezierTopX += horzMovementInterval
-    end
-    if (btn(1)) then
         leftBezierAnchorX += 1
         rightBezierAnchorX += 1
         centralBezierAnchorX += 1
@@ -57,16 +52,22 @@ function input()
         rightBezierTopX -= horzMovementInterval
         centralBezierTopX -= horzMovementInterval
     end
-    if (btnp(2)) then
-        movementCount += 1
-        -- bezierAnchorY -= 1
-        -- bezierAnchorY -= 1
+    if (btn(1)) then
+        leftBezierAnchorX -= 1
+        rightBezierAnchorX -= 1
+        centralBezierAnchorX -= 1
+        leftBezierTopX += horzMovementInterval
+        rightBezierTopX += horzMovementInterval
+        centralBezierTopX += horzMovementInterval
     end
-    if (btnp(3)) then
-        movementCount -= 1
-        -- bezierAnchorY += 1
-        -- bezierAnchorY += 1
-    end
+    -- if (btnp(2)) then
+    --     movementCount += 1
+    --     if movementCount == 5 then toggle = not toggle end 
+    -- end
+    -- if (btnp(3)) then
+    --     movementCount -= 1
+    --     if movementCount == 0 then toggle = not toggle end 
+    -- end
 end
 
 function drawSky()
@@ -116,47 +117,28 @@ function drawqbc(x1,y1,x2,y2,x3,y3,n,w,c)
     end
 end
 
--- function toggleColour(originalCol,c1,c2)
---     if originalCol == c1 then return c2 else return c1
---     end
+-- function toggleCurbColours()
+--     local temp = c1
+--     c1 = c2
+--     c2 = temp
 -- end
 
-function toggleCurbColours()
-    local temp = c1
-    c1 = c2
-    c2 = temp
-end
-
 function drawqbcAlternating(x1,y1,x2,y2,x3,y3,n,w,c1,c2)
-    -- if movementCount == 0 then 
-    --     local temp = c1
-    --     c1 = c2
-    --     c2 = temp
-    -- end
+    if toggle then 
+        local temp = c1
+        c1 = c2
+        c2 = temp
+    end
     local initY = qbcvector(y1,y2,y3,1/n)
-    -- print("initY",5,10,7)
-    -- Dlog(initY)
     local colour = c1
-    -- if slowCount == 0 then
-    --     colour = c1
-    -- else
-    --     colour = c2
-    -- end
-    -- if slowCount == 4 then toggleColour(colour,c1,c2) end
     for i = 1,n do 
         local t = i/n
         local x = qbcvector(x1,x2,x3,t)
-        local y = qbcvector(y1,y2,y3,t)
-        -- Dlog("Y: " .. y .. ", flr(y): " .. flr(y) .. "Toogle?: " .. (flr(y) % 5 == 1 and "True" or "false"))
-        -- Dlog("Y: " .. y .. ", flr(y): " .. flr(y) .. " Last digit: " .. flr(flr(y)%10))
-        -- if flr(y) % 5 == 1 then colour = toggleColour(colour,c1,c2) end
-        
+        local y = qbcvector(y1,y2,y3,t)  
         if flr(flr(y)%10) >= movementCount and flr(flr(y)%10) < movementCount + 5 then colour = c1 else colour = c2 end
         for j = 0,(w-1) do
             pset(x+j,y,colour)
         end
-        
-
     end
 end
 
@@ -165,7 +147,6 @@ function drawqbcExtended(x1,y1,x2,y2,x3,y3,n,c)
         local t = i/n
         local x = qbcvector(x1,x2,x3,t)
         local y = qbcvector(y1,y2,y3,t)
-        -- count x to 128
         for newX = x,128 do
             pset(newX,y,c)
         end
