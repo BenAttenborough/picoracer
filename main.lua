@@ -1,32 +1,38 @@
 function _init()
-    roadBottomY = 158
+    roadWidthBottom = 120
+    roadWidthTop = 28
+    roadWidthHalf = flr(roadWidthBottom / 2)
+    roadWidthTopHalf = flr(roadWidthTop / 2)
+    screenwidth = 128
+    screenXMid = flr(screenwidth / 2)
+    roadBottomY = 148
     bezierAnchorY = 120
-    leftBezierAnchorX = 20
-    rightBezierAnchorX = 108
-    centralBezierAnchorX = 64
-    leftBezierTopX = 50
-    rightBezierTopX = 78
-    centralBezierTopX = 64
+    leftRoadTopX = screenXMid - roadWidthTopHalf
+    rightRoadTopX = screenXMid + roadWidthTopHalf
+    centralRoadTopX = 64
+    leftRoadBottomX = screenXMid - roadWidthHalf
+    rightRoadBottomX = screenXMid + roadWidthHalf
+    centralRoadBottomX = screenXMid
     horzY = 40
+    bezierOffsetY = 5
+    leftBezierAnchorX = leftRoadBottomX - bezierOffsetY
+    rightBezierAnchorX = rightRoadBottomX + bezierOffsetY
+    centralBezierAnchorX = 64
     horzMovementInterval = 0.25
     minXCurve = 0
     curbWidth = 4
     logfile = "log.txt"
-    count = 1
     slowCount = 1
     movementCount = 1
     toggle = false
+    carSprite = 96
     Dlog("Initialise log", true)
 end
 
-function _update()
+function _update60()
     input()
-    count += 1
-    count = count % 10
-    if count % 5 == 0 then
-        slowCount += 1
-        slowCount = slowCount % 5
-    end
+    slowCount += 1
+    slowCount = slowCount % 5
     movementCount += 1
     if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
@@ -38,9 +44,24 @@ function _draw()
     drawCentralLine()
     drawRightRoadEdge()
     drawSky()
+    print("fps:" .. stat(7),5,5,7)
     -- print(slowCount,5,5,7)
     -- print(movementCount,5,5,7)
     -- print(toggle,5,12,7)
+
+    -- sspr(96)
+end
+
+function shiftRoadLeft(amount)
+    leftRoadBottomX -= amount
+    leftRoadTopX -= amount
+    leftBezierAnchorX += amount
+    rightRoadBottomX -= amount
+    rightRoadTopX -= amount
+    rightBezierAnchorX += amount
+    centralRoadBottomX -= amount
+    centralRoadTopX -= amount
+    centralBezierAnchorX += amount
 end
 
 function input()
@@ -48,26 +69,27 @@ function input()
         leftBezierAnchorX += 1
         rightBezierAnchorX += 1
         centralBezierAnchorX += 1
-        leftBezierTopX -= horzMovementInterval
-        rightBezierTopX -= horzMovementInterval
-        centralBezierTopX -= horzMovementInterval
+        leftRoadTopX -= horzMovementInterval
+        rightRoadTopX -= horzMovementInterval
+        centralRoadTopX -= horzMovementInterval
+        -- shiftRoadLeft(1)
     end
     if (btn(1)) then
         leftBezierAnchorX -= 1
         rightBezierAnchorX -= 1
         centralBezierAnchorX -= 1
-        leftBezierTopX += horzMovementInterval
-        rightBezierTopX += horzMovementInterval
-        centralBezierTopX += horzMovementInterval
+        leftRoadTopX += horzMovementInterval
+        rightRoadTopX += horzMovementInterval
+        centralRoadTopX += horzMovementInterval
+        -- screenXMid -= 1
+
     end
-    -- if (btnp(2)) then
-    --     movementCount += 1
-    --     if movementCount == 5 then toggle = not toggle end 
-    -- end
-    -- if (btnp(3)) then
-    --     movementCount -= 1
-    --     if movementCount == 0 then toggle = not toggle end 
-    -- end
+    if (btnp(2)) then
+        horzY += 1
+    end
+    if (btnp(3)) then
+        horzY -= 1
+    end
 end
 
 function drawSky()
@@ -75,20 +97,20 @@ function drawSky()
 end
 
 function drawLeftRoadEdge()
-    drawqbcExtended(20,roadBottomY,leftBezierTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,0)
-    drawqbcAlternating(20,roadBottomY,leftBezierTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
-    -- pset(leftBezierAnchorX,bezierAnchorY,8)
+    drawqbcExtended(leftRoadBottomX,roadBottomY,leftRoadTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,0)
+    drawqbcAlternating(leftRoadBottomX,roadBottomY,leftRoadTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
+    pset(leftBezierAnchorX,bezierAnchorY,10)
 end
 
 function drawRightRoadEdge()
-    drawqbcExtended(108,roadBottomY,rightBezierTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,3)
-    drawqbcAlternating(108,roadBottomY,rightBezierTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
-    -- pset(rightBezierAnchorX,bezierAnchorY,8)
+    drawqbcExtended(rightRoadBottomX,roadBottomY,rightRoadTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,3)
+    drawqbcAlternating(rightRoadBottomX,roadBottomY,rightRoadTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
+    pset(rightBezierAnchorX,bezierAnchorY,10)
 end
 
 function drawCentralLine()
-    drawqbcAlternating(64,roadBottomY,centralBezierTopX,horzY,centralBezierAnchorX,bezierAnchorY,200,2,7,0)
-    -- pset(centralBezierAnchorX,bezierAnchorY,8)
+    drawqbcAlternating(centralRoadBottomX,roadBottomY,centralRoadTopX,horzY,centralBezierAnchorX,bezierAnchorY,200,2,7,0)
+    pset(centralBezierAnchorX,bezierAnchorY,10)
 end
 
 function lv(v1,v2,t)
