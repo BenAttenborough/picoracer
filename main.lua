@@ -26,6 +26,9 @@ function _init()
     movementCount = 1
     toggle = false
     carSprite = 96
+    sx, sy = (carSprite % 16) * 8, flr(carSprite \ 16) * 8
+    carHeight = 16
+    carWidth = 24
     Dlog("Initialise log", true)
 end
 
@@ -49,7 +52,7 @@ function _draw()
     -- print(movementCount,5,5,7)
     -- print(toggle,5,12,7)
 
-    -- sspr(96)
+    sspr(sx,sy,carWidth,carHeight,32,110)
 end
 
 function shiftRoadLeft(amount)
