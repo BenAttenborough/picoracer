@@ -29,7 +29,7 @@ function _init()
     sx, sy = (carSprite % 16) * 8, flr(carSprite \ 16) * 8
     carHeight = 16
     carWidth = 24
-    Dlog("Initialise log", true)
+    -- Dlog("Initialise log", true)
 end
 
 function _update60()
@@ -75,7 +75,6 @@ function input()
         leftRoadTopX -= horzMovementInterval
         rightRoadTopX -= horzMovementInterval
         centralRoadTopX -= horzMovementInterval
-        -- shiftRoadLeft(1)
     end
     if (btn(1)) then
         leftBezierAnchorX -= 1
@@ -84,13 +83,11 @@ function input()
         leftRoadTopX += horzMovementInterval
         rightRoadTopX += horzMovementInterval
         centralRoadTopX += horzMovementInterval
-        -- screenXMid -= 1
-
     end
-    if (btnp(2)) then
+    if (btn(2)) then
         horzY += 1
     end
-    if (btnp(3)) then
+    if (btn(3)) then
         horzY -= 1
     end
 end
@@ -102,18 +99,18 @@ end
 function drawLeftRoadEdge()
     drawqbcExtended(leftRoadBottomX,roadBottomY,leftRoadTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,0)
     drawqbcAlternating(leftRoadBottomX,roadBottomY,leftRoadTopX,horzY,leftBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
-    pset(leftBezierAnchorX,bezierAnchorY,10)
+    -- pset(leftBezierAnchorX,bezierAnchorY,10)
 end
 
 function drawRightRoadEdge()
     drawqbcExtended(rightRoadBottomX,roadBottomY,rightRoadTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,3)
     drawqbcAlternating(rightRoadBottomX,roadBottomY,rightRoadTopX,horzY,rightBezierAnchorX,bezierAnchorY,200,curbWidth,7,8)
-    pset(rightBezierAnchorX,bezierAnchorY,10)
+    -- pset(rightBezierAnchorX,bezierAnchorY,10)
 end
 
 function drawCentralLine()
     drawqbcAlternating(centralRoadBottomX,roadBottomY,centralRoadTopX,horzY,centralBezierAnchorX,bezierAnchorY,200,2,7,0)
-    pset(centralBezierAnchorX,bezierAnchorY,10)
+    -- pset(centralBezierAnchorX,bezierAnchorY,10)
 end
 
 function lv(v1,v2,t)
@@ -124,29 +121,6 @@ end
 function qbcvector(v1,v2,v3,t) 
     return  lv(lv(v1,v3,t), lv(v3,v2,t),t)
 end
-
---draw Quadratic Bezier Curve
---x1,y1 = starting point 
---x2,y2 = end point
---x3,y3 = 3rd manipulating point 
---n = "amount of pixels in curve"(just put it higher than you expect)
---c = color
-function drawqbc(x1,y1,x2,y2,x3,y3,n,w,c)
-    for i = 1,n do 
-        local t = i/n
-        local x = qbcvector(x1,x2,x3,t)
-        local y = qbcvector(y1,y2,y3,t)
-        for j = 0,(w-1) do
-            pset(x+j,y,c)
-        end
-    end
-end
-
--- function toggleCurbColours()
---     local temp = c1
---     c1 = c2
---     c2 = temp
--- end
 
 function drawqbcAlternating(x1,y1,x2,y2,x3,y3,n,w,c1,c2)
     if toggle then 
@@ -172,9 +146,7 @@ function drawqbcExtended(x1,y1,x2,y2,x3,y3,n,c)
         local t = i/n
         local x = qbcvector(x1,x2,x3,t)
         local y = qbcvector(y1,y2,y3,t)
-        for newX = x,128 do
-            pset(newX,y,c)
-        end
+        line(x,y,screenwidth,y,c)
     end
 end
 
