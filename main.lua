@@ -59,10 +59,10 @@ function _draw()
     -- print(movementCount,5,5,7)
     -- print(toggle,5,12,7)
 
-    sspr(sx,sy,carWidth,carHeight,32,110)
-    drawCentralY()
-    drawBezierY()
-    drawCentralYAtBezier()
+    sspr(sx,sy,carWidth,carHeight,53,110)
+    -- drawCentralY()
+    -- drawBezierY()
+    -- drawCentralYAtBezier()
 end
 
 function input()
@@ -142,7 +142,7 @@ end
 
 function drawLeftRoadEdge()
     drawqbcAlternating(getLeftRoadConfig(),drawPoints,curbWidth,7,8)
-    pset(leftBezierAnchorX,bezierAnchorY,10)
+    -- pset(leftBezierAnchorX,bezierAnchorY,10)
 end
 
 function drawRightRoadEdge()
@@ -152,7 +152,8 @@ end
 
 function drawCentralLine()
     -- could maybe setup a camera and work out central point
-    drawCentralLines(getCentralRoadConfig(),drawPoints,2,7,0)
+    calculateCameraX(getCentralRoadConfig(),drawPoints,2,7,0)
+    drawqbcAlternating(getCentralRoadConfig(),drawPoints,2,7,0)
     -- pset(centralBezierAnchorX,bezierAnchorY,10)
 end
 
@@ -171,12 +172,11 @@ function drawqbcAlternating(lineConfig,n,width,colour1,colour2)
         colour1 = colour2
         colour2 = temp
     end
-    local initY = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,1/n)
     local colour = colour1
     for i = 1,n do 
         local t = i/n
-        local x = qbcvector(lineConfig.x1,lineConfig.x2,lineConfig.x3,t)
-        local y = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,t)  
+        local x = qbcvector(lineConfig.x1,lineConfig.x2,lineConfig.x3,t) - cameraX
+        local y = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,t)
         if flr(flr(y)%10) >= movementCount and flr(flr(y)%10) < movementCount + 5 then colour = colour1 else colour = colour2 end
         line(x,y,x+(width-1),y,colour)
     end
@@ -185,31 +185,23 @@ end
 function drawRoad(leftRoadConfig, rightRoadConfig, n, fillColour)
     for i = 1,n do 
         local t = i/n
-        local x1 = qbcvector(leftRoadConfig.x1,leftRoadConfig.x2,leftRoadConfig.x3,t)
+        local x1 = qbcvector(leftRoadConfig.x1,leftRoadConfig.x2,leftRoadConfig.x3,t) - cameraX
         local y1 = qbcvector(leftRoadConfig.y1,leftRoadConfig.y2,leftRoadConfig.y3,t)
-        local x2 = qbcvector(rightRoadConfig.x1,rightRoadConfig.x2,rightRoadConfig.x3,t)
+        local x2 = qbcvector(rightRoadConfig.x1,rightRoadConfig.x2,rightRoadConfig.x3,t) - cameraX
         -- calculating y2 is unneeded apparently as it the same as y1
         line(x1,y1,x2,y1,fillColour)
         
     end
 end
 
-function drawCentralLines(lineConfig,n,width,colour1,colour2)
-    if toggle then 
-        local temp = colour1
-        colour1 = colour2
-        colour2 = temp
-    end
-    local initY = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,1/n)
-    local colour = colour1
+function calculateCameraX(lineConfig,n,width,colour1,colour2)
     for i = 1,n do 
         local t = i/n
-        local x = qbcvector(lineConfig.x1,lineConfig.x2,lineConfig.x3,t)
-        local y = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,t)  
-        if flr(flr(y)%10) >= movementCount and flr(flr(y)%10) < movementCount + 5 then colour = colour1 else colour = colour2 end
-        line(x,y,x+(width-1),y,colour)
+        local x = qbcvector(lineConfig.x1,lineConfig.x2,lineConfig.x3,t) 
+        local y = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,t)
         if flr(y) == bezierAnchorY then
             centralYAtBezier = x
+            break
         end
     end
 end
