@@ -14,7 +14,6 @@ function _init()
     rightRoadBottomX = screenXMid + roadWidthHalf
     centralRoadBottomX = screenXMid
     horzY = 40
-    bezierOffsetY = 5
     leftBezierAnchorX = leftRoadBottomX 
     rightBezierAnchorX = rightRoadBottomX 
     centralBezierAnchorX = 64
@@ -32,7 +31,11 @@ function _init()
     drawPoints = 200
     cameraX = 0
     centralYAtBezier = 0
+    trackIndex = 1
+    segmentLength = track[1][1]
     -- Dlog("Initialise log", true)
+    tempCount = 0
+    count = 0
 end
 
 function _update60()
@@ -43,6 +46,8 @@ function _update60()
     if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
     cameraX = centralYAtBezier - 64
+    tempCount += 0.02
+    count = flr(tempCount)
 end
 
 function _draw()
@@ -53,16 +58,10 @@ function _draw()
     drawRightRoadEdge()
     drawSky()
     print("fps:" .. stat(7),5,5,7)
-    -- print("leftBezierAnchorX:" .. leftBezierAnchorX,5,11,7)
-    print("cameraX:" .. cameraX,5,11,7)
-    -- print(slowCount,5,5,7)
-    -- print(movementCount,5,5,7)
-    -- print(toggle,5,12,7)
-
+    print("camera x:" .. cameraX,5,11,7)
+    print("track:" .. track[1][2],5,17,7)
+    print("count:" .. count,5,23,7)
     sspr(sx,sy,carWidth,carHeight,53,110)
-    -- drawCentralY()
-    -- drawBezierY()
-    -- drawCentralYAtBezier()
 end
 
 function input()
@@ -151,7 +150,6 @@ function drawRightRoadEdge()
 end
 
 function drawCentralLine()
-    -- could maybe setup a camera and work out central point
     calculateCameraX(getCentralRoadConfig(),drawPoints,2,7,0)
     drawqbcAlternating(getCentralRoadConfig(),drawPoints,2,7,0)
     -- pset(centralBezierAnchorX,bezierAnchorY,10)
