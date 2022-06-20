@@ -13,15 +13,15 @@ function _init()
     leftRoadBottomX = screenXMid - roadWidthHalf
     rightRoadBottomX = screenXMid + roadWidthHalf
     centralRoadBottomX = screenXMid
-    horzY = 40
+    horzY = 60
     leftBezierAnchorX = leftRoadBottomX 
     rightBezierAnchorX = rightRoadBottomX 
     centralBezierAnchorX = 64
     horzMovementInterval = 0.25
-    minXCurve = 0
     curbWidth = 4
-    logfile = "log.txt"
-    slowCount = 1
+    logfile = "log2.txt"
+    -- slowCount = 1
+    tempMovementCount = 1
     movementCount = 1
     toggle = false
     carSprite = 96
@@ -33,21 +33,26 @@ function _init()
     centralYAtBezier = 0
     trackIndex = 1
     segmentLength = track[1][1]
-    -- Dlog("Initialise log", true)
-    tempCount = 0
+    Dlog("Initialise log", true)
+    speed = 1
+    maxInterval = 30
+    interval = 0
+    frameAction = 0
     count = 0
 end
 
 function _update60()
     input()
-    slowCount += 1
-    slowCount = slowCount % 5
-    movementCount += 1
+    interval = maxInterval / speed
+    frameAction = flr(maxInterval / interval)
+    count += 1
+    count = count % maxInterval
+    if count % frameAction != 0 then
+        movementCount += 1
+    end
     if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
     cameraX = centralYAtBezier - 64
-    tempCount += 0.02
-    count = flr(tempCount)
 end
 
 function _draw()
@@ -60,7 +65,11 @@ function _draw()
     print("fps:" .. stat(7),5,5,7)
     print("camera x:" .. cameraX,5,11,7)
     print("track:" .. track[1][2],5,17,7)
-    print("count:" .. count,5,23,7)
+    print("speed:" .. speed,5,23,7)
+    print("count:" .. count,5,29,7)
+    print("interval:" .. interval,5,35,7)
+    print("frameAction:" .. frameAction,5,41,7)
+    -- print("movementCount:" .. movementCount,5,29,7)
     sspr(sx,sy,carWidth,carHeight,53,110)
 end
 
@@ -86,6 +95,12 @@ function input()
     end
     if (btn(3)) then
         horzY -= 1
+    end
+    if (btnp(4)) then
+        speed = max(1, speed - 1)
+    end
+    if (btnp(5)) then
+        speed = min(5, speed + 1)
     end
 end
 
