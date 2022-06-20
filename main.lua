@@ -32,16 +32,22 @@ function _init()
     cameraX = 0
     centralYAtBezier = 0
     trackIndex = 1
-    segmentLength = track[1][1]
     Dlog("Initialise log", true)
     speed = 1
     maxInterval = 30
     interval = 0
     frameAction = 0
     count = 0
+    trackCount = 0
+    instructionCount = #track
+    currentInstruction = 1
+    instructionMovementCount = 1
 end
 
 function _update60()
+    instructionDuration = track[currentInstruction][1]
+    instructionDirection = track[currentInstruction][2]
+    instructionDistance = track[currentInstruction][3]
     input()
     interval = maxInterval / speed
     frameAction = flr(maxInterval / interval)
@@ -49,9 +55,17 @@ function _update60()
     count = count % maxInterval
     if count % frameAction != 0 then
         movementCount += 1
+        trackCount += 1
+        if instructionMovementCount < instructionDistance then
+            if instructionDirection == "right" then
+                moveRoadRight()
+            end
+            instructionMovementCount += 1
+        end
     end
     if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
+    
     cameraX = centralYAtBezier - 64
 end
 
@@ -64,31 +78,43 @@ function _draw()
     drawSky()
     print("fps:" .. stat(7),5,5,7)
     print("camera x:" .. cameraX,5,11,7)
-    print("track:" .. track[1][2],5,17,7)
-    print("speed:" .. speed,5,23,7)
-    print("count:" .. count,5,29,7)
-    print("interval:" .. interval,5,35,7)
-    print("frameAction:" .. frameAction,5,41,7)
+    print("speed:" .. speed,5,17,7)
+    print("track count:" .. trackCount,5,23,7)
+    print("instruction count:" .. instructionCount,5,29,7)
+    print("instruction duration:" .. instructionDuration,5,35,7)
+    print("instruction direction:" .. instructionDirection,5,41,7)
+    print("instruction distance:" .. instructionDistance,5,47,7)
+    -- print("count:" .. count,5,29,7)
+    -- print("interval:" .. interval,5,35,7)
+    -- print("frameAction:" .. frameAction,5,41,7)
     -- print("movementCount:" .. movementCount,5,29,7)
     sspr(sx,sy,carWidth,carHeight,53,110)
 end
 
+function moveRoadLeft()
+    leftBezierAnchorX += 1
+    rightBezierAnchorX += 1
+    centralBezierAnchorX += 1
+    leftRoadTopX -= horzMovementInterval
+    rightRoadTopX -= horzMovementInterval
+    centralRoadTopX -= horzMovementInterval
+end
+
+function moveRoadRight()
+    leftBezierAnchorX -= 1
+    rightBezierAnchorX -= 1
+    centralBezierAnchorX -= 1
+    leftRoadTopX += horzMovementInterval
+    rightRoadTopX += horzMovementInterval
+    centralRoadTopX += horzMovementInterval
+end
+
 function input()
     if (btn(0)) then
-        leftBezierAnchorX += 1
-        rightBezierAnchorX += 1
-        centralBezierAnchorX += 1
-        leftRoadTopX -= horzMovementInterval
-        rightRoadTopX -= horzMovementInterval
-        centralRoadTopX -= horzMovementInterval
+        moveRoadLeft()
     end
     if (btn(1)) then
-        leftBezierAnchorX -= 1
-        rightBezierAnchorX -= 1
-        centralBezierAnchorX -= 1
-        leftRoadTopX += horzMovementInterval
-        rightRoadTopX += horzMovementInterval
-        centralRoadTopX += horzMovementInterval
+        moveRoadRight()
     end
     if (btn(2)) then
         horzY += 1
