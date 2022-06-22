@@ -44,7 +44,8 @@ function _init()
     instructionMovementCount = 1
     carX = 53
     sunX = 45
-    sunY = 68
+    sunY = 80
+    skyColour = 0
 end
 
 function _update60()
@@ -83,6 +84,12 @@ function _update60()
     end
     sunY -= 0.005
     cameraX = centralYAtBezier - 64
+    if sunY < 73 then
+        skyColour = 13
+    end
+    if sunY < 65 then
+        skyColour = 12
+    end
 end
 
 function _draw()
@@ -168,7 +175,7 @@ function drawCentralYAtBezier()
 end
 
 function drawSky()
-    rectfill(0,0,127,horzY - 1,12)
+    rectfill(0,0,127,horzY - 1,skyColour)
 end
 
 function getLeftRoadConfig()
