@@ -43,6 +43,8 @@ function _init()
     currentInstruction = 0
     instructionMovementCount = 1
     carX = 53
+    sunX = 45
+    sunY = 68
 end
 
 function _update60()
@@ -57,6 +59,11 @@ function _update60()
     if count % frameAction != 0 then
         movementCount += 1
         trackCount += 1
+        if centralRoadTopX > 68 then
+            sunX -= 0.1
+        elseif centralRoadTopX < 60 then
+            sunX += 0.1
+        end
         if instructionMovementCount < instructionDistance then
             if instructionDirection == "right" then
                 moveRoadRight()
@@ -74,29 +81,37 @@ function _update60()
         trackCount = 0
         instructionMovementCount = 0
     end
+    sunY -= 0.005
     cameraX = centralYAtBezier - 64
 end
 
 function _draw()
     cls(3)
+    drawSky()
+    drawSun()
+    rectfill(0,horzY,127,127,3)
     drawRoad(getLeftRoadConfig(),getRightRoadConfig(),drawPoints,0)
     drawLeftRoadEdge()
     drawCentralLine()
     drawRightRoadEdge()
-    drawSky()
-    print("fps:" .. stat(7),5,5,7)
-    print("camera x:" .. cameraX,5,11,7)
-    print("speed:" .. speed,5,17,7)
-    print("track count:" .. trackCount,5,23,7)
-    print("instruction count:" .. instructionCount,5,29,7)
-    print("instruction duration:" .. instructionDuration,5,35,7)
-    print("instruction direction:" .. instructionDirection,5,41,7)
-    print("instruction distance:" .. instructionDistance,5,47,7)
+    -- drawSky()
+    -- print("fps:" .. stat(7),5,5,7)
+    -- print("camera x:" .. cameraX,5,11,7)
+    -- print("speed:" .. speed,5,17,7)
+    -- print("track count:" .. trackCount,5,23,7)
+    -- print("instruction count:" .. instructionCount,5,29,7)
+    -- print("instruction duration:" .. instructionDuration,5,35,7)
+    -- print("instruction direction:" .. instructionDirection,5,41,7)
+    -- print("instruction distance:" .. instructionDistance,5,47,7)
     -- print("count:" .. count,5,29,7)
     -- print("interval:" .. interval,5,35,7)
     -- print("frameAction:" .. frameAction,5,41,7)
     -- print("movementCount:" .. movementCount,5,29,7)
     sspr(sx,sy,carWidth,carHeight,carX,110)
+end
+
+function drawSun()
+    circfill(sunX,sunY,15,10)
 end
 
 function moveRoadLeft()
@@ -106,6 +121,7 @@ function moveRoadLeft()
     leftRoadTopX -= horzMovementInterval
     rightRoadTopX -= horzMovementInterval
     centralRoadTopX -= horzMovementInterval
+    -- sunX += 0.1
 end
 
 function moveRoadRight()
@@ -115,6 +131,7 @@ function moveRoadRight()
     leftRoadTopX += horzMovementInterval
     rightRoadTopX += horzMovementInterval
     centralRoadTopX += horzMovementInterval
+    -- sunX -= 0.1
 end
 
 function input()
@@ -151,7 +168,7 @@ function drawCentralYAtBezier()
 end
 
 function drawSky()
-    rectfill(0,0,127,horzY,12)
+    rectfill(0,0,127,horzY - 1,12)
 end
 
 function getLeftRoadConfig()
