@@ -40,14 +40,14 @@ function _init()
     count = 0
     trackCount = 0
     instructionCount = #track
-    currentInstruction = 1
+    currentInstruction = 0
     instructionMovementCount = 1
 end
 
 function _update60()
-    instructionDuration = track[currentInstruction][1]
-    instructionDirection = track[currentInstruction][2]
-    instructionDistance = track[currentInstruction][3]
+    instructionDuration = track[currentInstruction + 1][1]
+    instructionDirection = track[currentInstruction + 1][2]
+    instructionDistance = track[currentInstruction + 1][3]
     input()
     interval = maxInterval / speed
     frameAction = flr(maxInterval / interval)
@@ -59,13 +59,20 @@ function _update60()
         if instructionMovementCount < instructionDistance then
             if instructionDirection == "right" then
                 moveRoadRight()
+            elseif instructionDirection == "left" then
+                moveRoadLeft()
             end
             instructionMovementCount += 1
         end
     end
     if movementCount == 5 then toggle = not toggle end 
     movementCount = movementCount % 5
-    
+    if trackCount == instructionDuration then 
+        currentInstruction += 1
+        currentInstruction = currentInstruction % instructionCount
+        trackCount = 0
+        instructionMovementCount = 0
+    end
     cameraX = centralYAtBezier - 64
 end
 
