@@ -42,6 +42,7 @@ function _init()
     instructionCount = #track
     currentInstruction = 0
     instructionMovementCount = 1
+    carX = 53
 end
 
 function _update60()
@@ -95,7 +96,7 @@ function _draw()
     -- print("interval:" .. interval,5,35,7)
     -- print("frameAction:" .. frameAction,5,41,7)
     -- print("movementCount:" .. movementCount,5,29,7)
-    sspr(sx,sy,carWidth,carHeight,53,110)
+    sspr(sx,sy,carWidth,carHeight,carX,110)
 end
 
 function moveRoadLeft()
@@ -118,10 +119,10 @@ end
 
 function input()
     if (btn(0)) then
-        moveRoadLeft()
+        carX -= 1
     end
     if (btn(1)) then
-        moveRoadRight()
+        carX += 1
     end
     if (btn(2)) then
         horzY += 1
@@ -213,6 +214,8 @@ function qbcvector(v1,v2,v3,t)
 end
 
 function drawqbcAlternating(lineConfig,n,width,colour1,colour2)
+    local sectionDrawDistance = 5
+    local sectionDrawDistanceFull = 10
     if toggle then 
         local temp = colour1
         colour1 = colour2
@@ -223,7 +226,18 @@ function drawqbcAlternating(lineConfig,n,width,colour1,colour2)
         local t = i/n
         local x = qbcvector(lineConfig.x1,lineConfig.x2,lineConfig.x3,t) - cameraX
         local y = qbcvector(lineConfig.y1,lineConfig.y2,lineConfig.y3,t)
-        if flr(flr(y)%10) >= movementCount and flr(flr(y)%10) < movementCount + 5 then colour = colour1 else colour = colour2 end
+        -- if i >= 123 and i < 175 then
+        --     sectionDrawDistance = 4
+        --     sectionDrawDistanceFull = 8 
+        -- elseif i >= 175 and i < 200 then
+        --     sectionDrawDistance = 3
+        --     sectionDrawDistanceFull = 6
+        -- end
+        -- if i >= 175 and i < 200 then
+        --     sectionDrawDistance = 3
+        --     sectionDrawDistanceFull = 6
+        -- end
+        if flr(flr(y)%sectionDrawDistanceFull) >= movementCount and flr(flr(y)%sectionDrawDistanceFull) < movementCount + sectionDrawDistance then colour = colour1 else colour = colour2 end
         line(x,y,x+(width-1),y,colour)
     end
 end
